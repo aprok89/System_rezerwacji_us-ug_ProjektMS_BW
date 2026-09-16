@@ -17,8 +17,7 @@ CREATE TABLE users (
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT uq_users_email UNIQUE (email)
-)
- ENGINE=InnoDB;
+)  ENGINE=InnoDB;
 
 CREATE INDEX idx_users_role ON users (role);
 
