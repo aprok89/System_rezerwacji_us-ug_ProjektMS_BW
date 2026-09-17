@@ -50,10 +50,30 @@ CREATE TABLE services (
 CREATE INDEX idx_services_category ON services (category_id);
 CREATE INDEX idx_services_active ON services (active);
 
-/*CREATE TABLE employees (
+CREATE TABLE employees (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employees id  INT UNSIGNED NOT NULL,
     user_id       INT UNSIGEND NOT NULL,
     description   VARCHAR(100) NOT NULL,
     active        TINYINT(1)   NOT NULL DEFAULT 1,
-*/
+    CONSTRAINT fk_employees_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT uq_employees_user UNIQUE (user_id)
+) ENGINE=InnoDB;
+CREATE TABLE employee_services (
+    employee_id   INT UNSIGNED NOT NULL,
+    service_id    INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (employee_id, service_id),
+
+    CONSTRAINT fk_es_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_es_service
+        FOREIGN KEY (service_id) REFERENCES services(id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB;
+
