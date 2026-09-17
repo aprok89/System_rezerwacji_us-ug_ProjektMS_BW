@@ -49,3 +49,11 @@ CREATE TABLE services (
 
 CREATE INDEX idx_services_category ON services (category_id);
 CREATE INDEX idx_services_active ON services (active);
+
+/*CREATE TABLE employees (
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    employees id  INT UNSIGNED NOT NULL,
+    user_id       INT UNSIGEND NOT NULL,
+    description   VARCHAR(100) NOT NULL,
+    active        TINYINT(1)   NOT NULL DEFAULT 1,
+*/
