@@ -76,4 +76,36 @@ CREATE TABLE employee_services (
         FOREIGN KEY (service_id) REFERENCES services(id)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
+CREATE TABLE employee_availability (
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    employee_id   INT UNSIGNED NOT NULL,
+    day_of_week   TINYINT UNSIGNED NOT NULL COMMENT '1=Pn ... 7=Nd',
+    start_time    TIME NOT NULL,
+    end_time      TIME NOT NULL,
 
+    CONSTRAINT fk_availability_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT chk_availability_day CHECK (day_of_week BETWEEN 1 AND 7),
+    CONSTRAINT chk_availability_time CHECK (end_time > start_time)
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_availability_employee ON employee_availability (employee_id, day_of_week);
+
+
+CREATE TABLE employee_absences (
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    employee_id   INT UNSIGNED NOT NULL,
+    date_from     DATE NOT NULL,
+    date_to       DATE NOT NULL,
+    reason        VARCHAR(255) NULL,
+
+    CONSTRAINT fk_absences_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT chk_absences_dates CHECK (date_to >= date_from)
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_absences_employee ON employee_absences (employee_id, date_from, date_to);
