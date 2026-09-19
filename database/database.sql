@@ -62,6 +62,7 @@ CREATE TABLE employees (
 
     CONSTRAINT uq_employees_user UNIQUE (user_id)
 ) ENGINE=InnoDB;
+
 CREATE TABLE employee_services (
     employee_id   INT UNSIGNED NOT NULL,
     service_id    INT UNSIGNED NOT NULL,
@@ -76,6 +77,7 @@ CREATE TABLE employee_services (
         FOREIGN KEY (service_id) REFERENCES services(id)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
 CREATE TABLE employee_availability (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_id   INT UNSIGNED NOT NULL,
@@ -93,7 +95,6 @@ CREATE TABLE employee_availability (
 
 CREATE INDEX idx_availability_employee ON employee_availability (employee_id, day_of_week);
 
-
 CREATE TABLE employee_absences (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_id   INT UNSIGNED NOT NULL,
@@ -109,3 +110,55 @@ CREATE TABLE employee_absences (
 ) ENGINE=InnoDB;
 
 CREATE INDEX idx_absences_employee ON employee_absences (employee_id, date_from, date_to);
+CREATE TABLE reservations (
+    id                 INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id            INT UNSIGNED NOT NULL COMMENT 'klient',
+    employee_id        INT UNSIGNED NOT NULL,
+    service_id         INT UNSIGNED NOT NULL,
+    reservation_date   DATE NOT NULL,
+    start_time         TIME NOT NULL,
+    end_time           TIME NOT NULL,
+    status             ENUM('oczekująca', 'potwierdzona', 'zrealizowana', 'anulowana')
+                            NOT NULL DEFAULT 'oczekująca',
+    comment            VARCHAR(500) NULL,
+    created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_reservations_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_reservations_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_reservations_service
+        FOREIGN KEY (service_id) REFERENCES services(id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT chk_reservations_time CHECK (end_time > start_time)
+) ENGINE=InnoDB;
+
+
+CREATE INDEX idx_reservations_employee_date ON reservations (employee_id, reservation_date, status);
+CREATE INDEX idx_reservations_user ON reservations (user_id);
+CREATE INDEX idx_reservations_status ON reservations (status);
+
+
+CREATE TABLE reservation_status_history (
+    id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    reservation_id INT UNSIGNED NOT NULL,
+    old_status     ENUM('oczekująca', 'potwierdzona', 'zrealizowana', 'anulowana') NULL,
+    new_status     ENUM('oczekująca', 'potwierdzona', 'zrealizowana', 'anulowana') NOT NULL,
+    changed_by     INT UNSIGNED NULL COMMENT 'użytkownik, który zmienił status',
+    changed_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_history_reservation
+        FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_history_user
+        FOREIGN KEY (changed_by) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_history_reservation ON reservation_status_history (reservation_id);
