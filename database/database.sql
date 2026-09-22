@@ -162,3 +162,40 @@ CREATE TABLE reservation_status_history (
 ) ENGINE=InnoDB;
 
 CREATE INDEX idx_history_reservation ON reservation_status_history (reservation_id);
+
+CREATE TABLE admin_logs (
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    admin_id      INT UNSIGNED NOT NULL,
+    action        VARCHAR(255) NOT NULL,
+    target_table  VARCHAR(50)  NULL,
+    target_id     INT UNSIGNED NULL,
+    created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_logs_admin
+        FOREIGN KEY (admin_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_reservations_no_overlap
+BEFORE INSERT ON reservations
+FOR EACH ROW
+BEGIN
+    DECLARE conflict_count INT;
+
+    SELECT COUNT(*) INTO conflict_count
+    FROM reservations
+    WHERE employee_id = NEW.employee_id
+      AND reservation_date = NEW.reservation_date
+      AND status <> 'anulowana'
+      AND NEW.start_time < end_time
+      AND NEW.end_time > start_time;
+
+    IF conflict_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Termin koliduje z inną aktywną rezerwacją tego pracownika.';
+    END IF;
+END$$ 
