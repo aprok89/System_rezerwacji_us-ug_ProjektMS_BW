@@ -199,3 +199,80 @@ BEGIN
         SET MESSAGE_TEXT = 'Termin koliduje z inną aktywną rezerwacją tego pracownika.';
     END IF;
 END$$ 
+
+DELIMITER ;
+
+--DANE TESTOWE
+--Hasło dla kont testowych: haslo123
+INSERT INTO users (name, surname, email, password, phone, role, active) VALUES
+('Anna',    'Kowalska',     'admin@masaz.pl',      '$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '500100100', 'admin',    1),
+('Piotr',   'Nowak',        'piotr.nowak@masaz.pl','$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '500200200', 'employee', 1),
+('Katarzyna','Wiśniewska',  'kasia.w@masaz.pl',    '$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '500200201', 'employee', 1),
+('Marek',   'Zieliński',    'marek.z@masaz.pl',    '$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '500200202', 'employee', 1),
+('Jan',     'Kowalski',     'jan.kowalski@wp.pl',  '$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '600300300', 'client',   1),
+('Maria',   'Lewandowska',  'maria.l@wp.pl',       '$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '600300301', 'client',   1),
+('Tomasz',  'Wójcik',       'tomasz.w@wp.pl',      '$2y$10$u7x80CNaRTvi2Tkl5L5hZOL/3YKQWAF1CPEN/v65.kKpVaHwAe.5S', '600300302', 'client',   1);
+
+
+INSERT INTO service_categories (name, description) VALUES
+('Masaż relaksacyjny', 'Masaże wyciszające, redukujące stres i napięcie mięśniowe'),
+('Masaż leczniczy',    'Masaże terapeutyczne zalecane przy dolegliwościach kręgosłupa i mięśni'),
+('Masaż sportowy',     'Masaże dla osób aktywnych fizycznie, regeneracyjne i przygotowujące do wysiłku'),
+('Masaże specjalistyczne', 'Masaż twarzy, gorącymi kamieniami oraz masaż dla kobiet w ciąży');
+
+
+INSERT INTO services (category_id, name, description, duration, price, active) VALUES
+(1, 'Masaż relaksacyjny całego ciała', 'Delikatny masaż redukujący stres, olejki zapachowe', 60, 150.00, 1),
+(1, 'Masaż relaksacyjny pleców',       'Krótki masaż odprężający partię pleców i karku',      30,  80.00, 1),
+(2, 'Masaż leczniczy kręgosłupa',      'Masaż terapeutyczny dla osób z bólami pleców',        45, 140.00, 1),
+(2, 'Masaż tkanek głębokich',          'Intensywny masaż rozluźniający głębokie warstwy mięśni', 60, 180.00, 1),
+(3, 'Masaż sportowy',                  'Masaż regeneracyjny przed/po wysiłku fizycznym',      60, 170.00, 1),
+(4, 'Masaż gorącymi kamieniami',       'Masaż z wykorzystaniem rozgrzanych kamieni bazaltowych', 90, 220.00, 1),
+(4, 'Masaż twarzy i głowy',            'Relaksujący masaż okolic twarzy, szyi i skóry głowy', 30,  70.00, 1),
+(4, 'Masaż dla kobiet w ciąży',        'Delikatny masaż bezpieczny w okresie ciąży',          45, 130.00, 1);
+
+
+INSERT INTO employees (user_id, description, active) VALUES
+(2, 'Masażysta z 8-letnim doświadczeniem, specjalizacja: masaż leczniczy i sportowy', 1),
+(3, 'Certyfikowana masażystka, specjalizacja: relaksacja i masaż gorącymi kamieniami', 1),
+(4, 'Fizjoterapeuta i masażysta, specjalizacja: tkanki głębokie i rehabilitacja', 1);
+
+
+INSERT INTO employee_services (employee_id, service_id) VALUES
+(1, 3), (1, 4), (1, 5),
+(2, 1), (2, 2), (2, 6), (2, 7),
+(3, 3), (3, 4), (3, 8);  
+
+
+INSERT INTO employee_availability (employee_id, day_of_week, start_time, end_time) VALUES
+(1, 1, '08:00:00', '16:00:00'),
+(1, 2, '08:00:00', '16:00:00'),
+(1, 3, '08:00:00', '16:00:00'),
+(1, 4, '08:00:00', '16:00:00'),
+(1, 5, '08:00:00', '14:00:00'),
+(2, 2, '10:00:00', '18:00:00'),
+(2, 3, '10:00:00', '18:00:00'),
+(2, 4, '10:00:00', '18:00:00'),
+(2, 5, '10:00:00', '18:00:00'),
+(2, 6, '09:00:00', '13:00:00'),
+(3, 1, '09:00:00', '17:00:00'),
+(3, 3, '09:00:00', '17:00:00'),
+(3, 5, '09:00:00', '17:00:00'),
+(3, 6, '09:00:00', '13:00:00');
+
+
+INSERT INTO employee_absences (employee_id, date_from, date_to, reason) VALUES
+(2, '2026-12-22', '2026-12-31', 'Urlop wypoczynkowy');
+--Rezerwacje testowe
+INSERT INTO reservations (user_id, employee_id, service_id, reservation_date, start_time, end_time, status, comment) VALUES
+(5, 1, 5, '2026-12-01', '10:00:00', '11:00:00', 'potwierdzona', 'Pierwsza wizyta'),
+(6, 2, 1, '2026-12-02', '11:00:00', '12:00:00', 'oczekująca', NULL),
+(7, 3, 3, '2026-12-03', '09:00:00', '09:45:00', 'zrealizowana', 'Zalecenie kontynuacji za 2 tygodnie'),
+(5, 2, 6, '2026-12-05', '10:30:00', '12:00:00', 'anulowana', 'Klient odwołał wizytę'),
+(6, 1, 4, '2026-12-06', '13:00:00', '14:00:00', 'potwierdzona', NULL);
+
+INSERT INTO reservation_status_history (reservation_id, old_status, new_status, changed_by) VALUES
+(4, 'oczekująca', 'anulowana', 5);
+--Przykładowy wpis w logu administratora
+INSERT INTO admin_logs (admin_id, action, target_table, target_id) VALUES
+(1, 'Dodano nową usługę: Masaż dla kobiet w ciąży', 'services', 8);
