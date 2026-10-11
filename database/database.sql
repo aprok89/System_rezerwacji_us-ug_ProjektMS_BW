@@ -52,8 +52,8 @@ CREATE INDEX idx_services_active ON services (active);
 
 CREATE TABLE employees (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    employees id  INT UNSIGNED NOT NULL,
-    user_id       INT UNSIGEND NOT NULL,
+    employees_id  INT UNSIGNED NOT NULL,
+    user_id       INT UNSIGNED NOT NULL,
     description   VARCHAR(100) NOT NULL,
     active        TINYINT(1)   NOT NULL DEFAULT 1,
     CONSTRAINT fk_employees_user
