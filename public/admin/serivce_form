@@ -1,0 +1,88 @@
+<?php
+require __DIR__ . '/_init.php';
+
+$id  = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
+$svc = ['category_id' => 0, 'name' => '', 'description' => '', 'duration' => 30, 'price' => '0.00', 'active' => 1];
+
+if ($id) {
+    $st = $pdo->prepare('SELECT * FROM services WHERE id = ?');
+    $st->execute([$id]);
+    $svc = $st->fetch();
+    if (!$svc) {
+        flash('Nie znaleziono usługi.', 'error');
+        redirect('services.php');
+    }
+}
+
+$categories = $pdo->query('SELECT id, name FROM service_categories ORDER BY name')->fetchAll();
+$errors = [];
+
+if (is_post()) {
+    csrf_verify();
+    $svc['category_id'] = (int)($_POST['category_id'] ?? 0);
+    $svc['name']        = trim($_POST['name'] ?? '');
+    $svc['description'] = trim($_POST['description'] ?? '');
+    $svc['duration']    = (int)($_POST['duration'] ?? 0);
+    $priceRaw           = str_replace(',', '.', trim($_POST['price'] ?? ''));
+    $svc['price']       = $priceRaw;
+    $svc['active']      = isset($_POST['active']) ? 1 : 0;
+
+    $len = mb_strlen($svc['name']);
+    if ($len < 2 || $len > 100)            $errors[] = 'Nazwa musi mieć od 2 do 100 znaków.';
+    if (mb_strlen($svc['description']) > 1000) $errors[] = 'Opis może mieć maksymalnie 1000 znaków.';
+    if ($svc['duration'] < 5 || $svc['duration'] > 480) $errors[] = 'Czas trwania musi mieścić się w zakresie 5-480 minut.';
+    if (!preg_match('/^\d{1,6}(\.\d{1,2})?$/', $priceRaw)) $errors[] = 'Podaj poprawną cenę (np. 49.99).';
+
+    $st = $pdo->prepare('SELECT COUNT(*) FROM service_categories WHERE id = ?');
+    $st->execute([$svc['category_id']]);
+    if (!$st->fetchColumn()) $errors[] = 'Wybierz poprawną kategorię.';
+
+    if (!$errors) {
+        try {
+            if ($id) {
+                $pdo->prepare('UPDATE services SET category_id=?, name=?, description=?, duration=?, price=?, active=? WHERE id=?')
+                    ->execute([$svc['category_id'], $svc['name'], $svc['description'], $svc['duration'], $priceRaw, $svc['active'], $id]);
+                log_admin('Zmieniono usługę: ' . $svc['name'], 'services', $id);
+                flash('Usługa została zaktualizowana.');
+            } else {
+                $pdo->prepare('INSERT INTO services (category_id, name, description, duration, price, active) VALUES (?,?,?,?,?,?)')
+                    ->execute([$svc['category_id'], $svc['name'], $svc['description'], $svc['duration'], $priceRaw, $svc['active']]);
+                $newId = (int)$pdo->lastInsertId();
+                log_admin('Dodano usługę: ' . $svc['name'], 'services', $newId);
+                flash('Usługa została dodana.');
+            }
+            redirect('services.php');
+        } catch (PDOException $ex) {
+            error_log($ex->getMessage());
+            $errors[] = 'Nie udało się zapisać danych. Spróbuj ponownie.';
+        }
+    }
+}
+
+$pageTitle = $id ? 'Edycja usługi' : 'Nowa usługa';
+$activeNav = 'services';
+require __DIR__ . '/_header.php';
+?>
+<?php if ($errors): ?><div class="alert alert-error"><ul><?php foreach ($errors as $m): ?><li><?= e($m) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
+<form class="card form-narrow" method="post" novalidate>
+    <?= csrf_field() ?>
+    <input type="hidden" name="id" value="<?= $id ?>">
+    <label>Nazwa <input type="text" name="name" maxlength="100" value="<?= e($svc['name']) ?>" required></label>
+    <label>Kategoria
+        <select name="category_id" required>
+            <option value="0">- wybierz -</option>
+            <?php foreach ($categories as $c): ?>
+                <option value="<?= (int)$c['id'] ?>"<?= (int)$svc['category_id'] === (int)$c['id'] ? ' selected' : '' ?>><?= e($c['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </label>
+    <div class="grid2">
+        <label>Czas trwania (minuty) <input type="number" name="duration" min="5" max="480" step="5" value="<?= (int)$svc['duration'] ?>" required></label>
+        <label>Cena (zł) <input type="text" name="price" inputmode="decimal" value="<?= e($svc['price']) ?>" required></label>
+    </div>
+    <label>Opis <textarea name="description" maxlength="1000"><?= e($svc['description']) ?></textarea></label>
+    <label class="check"><input type="checkbox" name="active" value="1"<?= $svc['active'] ? ' checked' : '' ?>> Usługa aktywna (widoczna dla klientów)</label>
+    <button class="btn" type="submit">Zapisz</button>
+    <a class="btn btn-light" href="services.php">Anuluj</a>
+</form>
+<?php require __DIR__ . '/_footer.php'; ?>
