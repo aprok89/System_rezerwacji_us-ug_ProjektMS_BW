@@ -1,1 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gabinet masażu - rezerwacje online</title>
+
+    <link rel="stylesheet" href="assets/site.css">
+    <style>
+        .hero {
+            background: linear-gradient(135deg, #1b2433 0%, #2a3a57 60%, #2f6fed 140%);
+            color: #fff;
+            text-align: center;
+            padding: 72px 16px 80px;
+        }
+        .hero h1 { font-size: 2.2rem; margin: 0 0 12px; }
+        .hero p { max-width: 560px; margin: 0 auto 28px; color: #cdd7e6; font-size: 1.1rem; }
+        .hero .btn { padding: 12px 26px; font-size: 1.05rem; }
+        .hero .btn-outline { background: transparent; border: 1px solid #cdd7e6; color: #fff; margin-left: 8px; }
+        .hero .btn-outline:hover { background: rgba(255, 255, 255, .12); }
+
+        .section { max-width: 1000px; margin: 0 auto; padding: 48px 16px 8px; }
+        .section h2 { text-align: center; font-size: 1.5rem; margin: 0 0 24px; }
+
+        .steps-home { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+        .step-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 22px; text-align: center; }
+        .step-card .nr {
+            width: 40px; height: 40px; line-height: 40px; margin: 0 auto 12px;
+            border-radius: 50%; background: var(--primary); color: #fff; font-weight: 700;
+        }
+        .step-card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+        .step-card p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+        .types { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+        .type { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+                padding: 18px; color: var(--text); }
+        .type:hover { border-color: var(--primary); text-decoration: none; box-shadow: 0 0 0 2px rgba(47, 111, 237, .15); }
+        .type strong { display: block; margin-bottom: 4px; }
+        .type span { color: var(--muted); font-size: .9rem; }
+
+        .cta { text-align: center; margin: 48px auto 0; padding: 0 16px; }
+        @media (max-width: 700px) {
+            .hero { padding: 48px 16px 56px; }
+            .hero h1 { font-size: 1.7rem; }
+            .hero .btn-outline { margin: 10px 0 0; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <strong class="brand">Gabinet masażu</strong>
+    <nav class="menu">
+        <a href="index.html" class="active">Strona główna</a>
+        <a href="uslugi.php">Oferta</a>
+    </nav>
+    <span class="user">
+        <a href="login.php">Zaloguj</a>
+        <a href="rejestracja.php">Zarejestruj</a>
+    </span>
+</header>
+
+<section class="hero">
+    <h1>Zarezerwuj masaż online</h1>
+    <p>Wybierz usługę, specjalistę i dogodny termin. Całość zajmie Ci tylko chwilę.</p>
+    <a class="btn" href="uslugi.php">Zobacz ofertę</a>
+    <a class="btn btn-outline" href="login.php">Moje rezerwacje</a>
+</section>
+
+<section class="section">
+    <h2>Jak to działa</h2>
+    <div class="steps-home">
+        <div class="step-card">
+            <div class="nr">1</div>
+            <h3>Wybierz usługę</h3>
+            <p>Przejrzyj ofertę, sprawdź czas trwania i cenę.</p>
+        </div>
+        <div class="step-card">
+            <div class="nr">2</div>
+            <h3>Wybierz termin</h3>
+            <p>Wskaż specjalistę, datę i jedną z wolnych godzin.</p>
+        </div>
+        <div class="step-card">
+            <div class="nr">3</div>
+            <h3>Potwierdź</h3>
+            <p>Rezerwację zobaczysz w swoim koncie i możesz ją anulować.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Nasze masaże</h2>
+    <div class="types">
+        <a class="type" href="uslugi.php"><strong>Relaksacyjne</strong><span>Odprężenie i redukcja stresu</span></a>
+        <a class="type" href="uslugi.php"><strong>Lecznicze</strong><span>Wsparcie przy bólach kręgosłupa</span></a>
+        <a class="type" href="uslugi.php"><strong>Sportowe</strong><span>Regeneracja po wysiłku</span></a>
+        <a class="type" href="uslugi.php"><strong>Specjalistyczne</strong><span>Twarz, kamienie, masaż w ciąży</span></a>
+    </div>
+</section>
+
+<div class="cta">
+    <a class="btn" href="rejestracja.php">Załóż konto</a>
+</div>
+
+<footer class="site-footer">Projekt wykonany przez Mateusza Szostka i Bartosza Wentykiera</footer>
+
+</body>
+</html>
 
