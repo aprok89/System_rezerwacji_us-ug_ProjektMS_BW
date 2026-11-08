@@ -9,7 +9,7 @@ function redirect_by_role(string $role): void
     switch ($role) {
         case 'admin':    redirect('admin/index.php');
         case 'employee': redirect('employee/index.php');
-        default:         redirect('profil.php'); 
+        default:         redirect('moje_rezerwacje.php');  // Dodanie przekierowanie do rzererwacji jak sie klienta odpali
     }
 }
 
