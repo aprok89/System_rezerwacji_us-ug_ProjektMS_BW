@@ -5,7 +5,7 @@ require __DIR__ . '/includes/auth.php';
 $user = require_login('login.php'); 
 $pdo  = db();
 
-$homeByRole = ['admin' => 'admin/index.php', 'employee' => 'employee/index.php', 'client' => 'index.html'];
+$homeByRole = ['admin' => 'admin/index.php', 'employee' => 'employee/index.php', 'client' => 'moje_rezerwacje.php'];
 $home = $homeByRole[$user['role']] ?? 'index.html';
 $roleLabels = ['admin' => 'Administrator', 'employee' => 'Pracownik', 'client' => 'Klient'];
 
@@ -20,7 +20,7 @@ if (is_post()) {
     csrf_verify();
     $action = $_POST['action'] ?? '';
 
-
+    // Edytownie Danych Bazy
     if ($action === 'profile') {
         foreach ($form as $k => $_) {
             $v = $_POST[$k] ?? '';
@@ -50,7 +50,7 @@ if (is_post()) {
         }
     }
 
-
+    // Zmiana hasla po podandiu starego
     if ($action === 'password') {
         $old  = is_string($_POST['old_password'] ?? null) ? $_POST['old_password'] : '';
         $new  = is_string($_POST['new_password'] ?? null) ? $_POST['new_password'] : '';
