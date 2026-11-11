@@ -7,6 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/database.php';
 
+date_default_timezone_set('Europe/Warsaw'); 
+
 
 const RESERVATION_STATUSES = [
     'oczekująca'   => 'Oczekująca',
@@ -145,7 +147,7 @@ function login_is_blocked(string $email): bool
         $st->execute([mb_substr(mb_strtolower($email), 0, 100)]);
         return (int)$st->fetchColumn() >= LOGIN_MAX_ATTEMPTS;
     } catch (PDOException $ex) {
-        error_log('login_attempts: ' . $ex->getMessage()); // brak tabeli nie może zablokować logowania
+        error_log('login_attempts: ' . $ex->getMessage()); 
         return false;
     }
 }
@@ -156,7 +158,7 @@ function login_register_failure(string $email): void
         $pdo = db();
         $pdo->prepare('INSERT INTO login_attempts (email, ip) VALUES (?, ?)')
             ->execute([mb_substr(mb_strtolower($email), 0, 100), substr($_SERVER['REMOTE_ADDR'] ?? 'unknown', 0, 45)]);
-        $pdo->exec('DELETE FROM login_attempts WHERE attempted_at < (NOW() - INTERVAL 1 DAY)'); // sprzątanie
+        $pdo->exec('DELETE FROM login_attempts WHERE attempted_at < (NOW() - INTERVAL 1 DAY)'); 
     } catch (PDOException $ex) {
         error_log('login_attempts: ' . $ex->getMessage());
     }
@@ -219,6 +221,7 @@ function pagination_links(int $page, int $pages): string
     }
     return $html . '</nav>';
 }
+
 
 function fetch_page(PDO $pdo, string $sql, array $params, int $perPage, int $offset): array
 {
