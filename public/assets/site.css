@@ -1,0 +1,35 @@
+@import url('../admin/assets/admin.css');
+
+/* Jakies fajne dodatki do strony klienta*/
+.site-footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 24px 12px; }
+
+.filters-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip { padding: 5px 14px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--text); font-size: .9rem; }
+.chip.active, .chip:hover { background: var(--primary); border-color: var(--primary); color: #fff; text-decoration: none; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.service-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.service-card h3 { margin: 0; font-size: 1.05rem; }
+.service-card .meta { color: var(--muted); font-size: .9rem; }
+.service-card .price { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+.service-card .grow { flex: 1; }
+.service-card .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.steps { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0 0 20px; }
+.steps li { padding: 6px 14px; border-radius: 999px; background: #e7ecf4; color: var(--muted); font-size: .9rem; }
+.steps li.done { background: #dff3e7; color: #14693a; }
+.steps li.current { background: var(--primary); color: #fff; font-weight: 600; }
+
+.choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.choice { display: block; padding: 14px; background: #fff; border: 1px solid var(--border); border-radius: 10px; color: var(--text); }
+.choice:hover { border-color: var(--primary); text-decoration: none; box-shadow: 0 0 0 2px rgba(47,111,237,.15); }
+
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 10px; }
+.slot { text-align: center; padding: 10px 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; color: var(--text); }
+.slot:hover { background: var(--primary); border-color: var(--primary); color: #fff; text-decoration: none; }
+
+.summary { display: grid; grid-template-columns: 140px 1fr; gap: 6px 14px; margin: 0 0 14px; }
+.summary dt { color: var(--muted); }
+.summary dd { margin: 0; font-weight: 600; }
+
+@media (max-width: 700px) { .summary { grid-template-columns: 1fr; } }
