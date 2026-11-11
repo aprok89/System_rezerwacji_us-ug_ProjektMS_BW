@@ -1,31 +1,25 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/../includes/auth.php';
+require __DIR__ . '/_init.php';
+require __DIR__ . '/talbe.php';
 
-//Tylko dla pracownika jak klient wpisze to ręczne to wywali error chyba 403.
-$user = require_role(['employee'], '../login.php');
+$today = date('Y-m-d');
+
+$st = $pdo->prepare(VISITS_SELECT . ' WHERE r.employee_id = ? AND r.reservation_date = ? ORDER BY r.start_time');
+$st->execute([$empId, $today]);
+$visits = $st->fetchAll();
+
+$st = $pdo->prepare("SELECT COUNT(*) FROM reservations WHERE employee_id = ? AND reservation_date > ? AND status <> 'anulowana'");
+$st->execute([$empId, $today]);
+$upcomingCount = (int)$st->fetchColumn();
+
+$pageTitle = 'Wizyty na dzisiaj';
+$activeNav = 'today';
+require __DIR__ . '/_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Panel pracownika</title>
-    <link rel="stylesheet" href="../admin/assets/admin.css">
-</head>
-<body>
-<header class="topbar">
-    <strong class="brand">Panel pracownika</strong>
-    <nav class="menu"></nav>
-    <span class="user"><?= e($user['name'] . ' ' . $user['surname']) ?>
-        <a href="../profil.php">Moje konto</a>
-        <a href="../logout.php">Wyloguj</a></span>
-</header>
-<main class="container">
-    <h1>Panel pracownika</h1>
-    <div class="card">
-        <p>Witaj, <?= e($user['name']) ?>! Lista wizyt i zmiana statusów pojawią się tu w etapie 4.</p>
-    </div>
-</main>
-</body>
-</html>
+<div class="stats">
+    <div class="stat"><div class="num"><?= count($visits) ?></div><div class="lbl">Wizyty dzisiaj (<?= e(date('d.m.Y')) ?>)</div></div>
+    <a class="stat" href="visits.php?view=upcoming"><div class="num"><?= $upcomingCount ?></div><div class="lbl">Nadchodzące wizyty</div></a>
+</div>
+<?php render_visits($visits); ?>
+<?php require __DIR__ . '/_footer.php'; ?>
